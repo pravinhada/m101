@@ -5,7 +5,7 @@ import sys
 
 connection = pymongo.Connection("mongodb://localhost", safe=True)
 
-def remove_homework():
+def remove_lowest_score():
     print "\nRemoving the grade of type Homework with the lowest socre for each student\n"
     db = connection.students
     grades = db.grades
@@ -31,7 +31,7 @@ def remove_homework():
 
     print "Total Count: ", count
 
-remove_homework()
+remove_lowest_score()
 
 # After executing this script, run following mongodb command
 # db.grades.count()
