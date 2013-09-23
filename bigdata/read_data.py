@@ -1,3 +1,7 @@
+"""
+for more information please see: http://techely.blogspot.com/2012/10/mapreduce-processing-large-data-sets.html
+"""
+
 import mincemeat
 import glob
 import stopwords
