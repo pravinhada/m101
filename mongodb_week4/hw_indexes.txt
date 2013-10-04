@@ -1,0 +1,147 @@
+// blog home
+python: posts.get_posts(10)
+mongodb: db.posts.find().sort({date:-1}).limit(10).explain()
+result:
+{
+        "cursor" : "BasicCursor",
+        "isMultiKey" : false,
+        "n" : 10,
+        "nscannedObjects" : 1000,
+        "nscanned" : 1000,
+        "nscannedObjectsAllPlans" : 1000,
+        "nscannedAllPlans" : 1000,
+        "scanAndOrder" : true,
+        "indexOnly" : false,
+        "nYields" : 0,
+        "nChunkSkips" : 0,
+        "millis" : 15,
+        "indexBounds" : {
+
+        },
+        "server" : "DPH-SLI-MJ964XT:27017"
+}
+time took to return 10 record after scanning 1000 documents = 15 millis and nscanned = 1000
+
+After adding Index, for 10 results
+{
+        "cursor" : "BtreeCursor date_-1",
+        "isMultiKey" : false,
+        "n" : 10,
+        "nscannedObjects" : 10,
+        "nscanned" : 10,
+        "nscannedObjectsAllPlans" : 10,
+        "nscannedAllPlans" : 10,
+        "scanAndOrder" : false,
+        "indexOnly" : false,
+        "nYields" : 0,
+        "nChunkSkips" : 0,
+        "millis" : 0,
+        "indexBounds" : {
+                "date" : [
+                        [
+                                {
+                                        "$maxElement" : 1
+                                },
+                                {
+                                        "$minElement" : 1
+                                }
+                        ]
+                ]
+        },
+        "server" : "DPH-SLI-MJ964XT:27017"
+}
+time= 0 millis and nscanned = 10
+
+// blog by tag
+python: posts.get_posts_by_tag(tag, 10)
+mongodb: db.posts.find({tags:'tempo'}).sort({date:-1}).limit(10).explain()
+result:
+{
+        "cursor" : "BasicCursor",
+        "isMultiKey" : false,
+        "n" : 5,
+        "nscannedObjects" : 1000,
+        "nscanned" : 1000,
+        "nscannedObjectsAllPlans" : 1000,
+        "nscannedAllPlans" : 1000,
+        "scanAndOrder" : true,
+        "indexOnly" : false,
+        "nYields" : 0,
+        "nChunkSkips" : 0,
+        "millis" : 2,
+        "indexBounds" : {
+
+        },
+        "server" : "DPH-SLI-MJ964XT:27017"
+}
+After:
+{
+        "cursor" : "BtreeCursor tags_1",
+        "isMultiKey" : true,
+        "n" : 5,
+        "nscannedObjects" : 5,
+        "nscanned" : 5,
+        "nscannedObjectsAllPlans" : 15,
+        "nscannedAllPlans" : 15,
+        "scanAndOrder" : true,
+        "indexOnly" : false,
+        "nYields" : 0,
+        "nChunkSkips" : 0,
+        "millis" : 0,
+        "indexBounds" : {
+                "tags" : [
+                        [
+                                "tempo",
+                                "tempo"
+                        ]
+                ]
+        },
+        "server" : "DPH-SLI-MJ964XT:27017"
+}
+
+// blog perm link
+posts.get_post_by_permlink(permlink)
+db.posts.findOne({permalink:'TLxrBfyxTZjqOKqxgnUP'})
+
+Solutions:
+// add an index for date
+1. db.posts.ensureIndex({date:-1})
+2. db.posts.ensureIndex({tags: 1, date:-1})
+3. db.posts.ensureIndex({permalink: 1})
+
+db.posts.getIndexes()
+[
+        {
+                "v" : 1,
+                "key" : {
+                        "_id" : 1
+                },
+                "ns" : "blog.posts",
+                "name" : "_id_"
+        },
+        {
+                "v" : 1,
+                "key" : {
+                        "date" : -1
+                },
+                "ns" : "blog.posts",
+                "name" : "date_-1"
+        },
+        {
+                "v" : 1,
+                "key" : {
+                        "tags" : 1,
+                        "date" : -1
+                },
+                "ns" : "blog.posts",
+                "name" : "tags_1_date_-1"
+        },
+        {
+                "v" : 1,
+                "key" : {
+                        "permalink" : 1
+                },
+                "ns" : "blog.posts",
+                "name" : "permalink_1"
+        }
+]

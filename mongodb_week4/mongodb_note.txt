@@ -1,0 +1,39 @@
+// adding index e.g. for student_id
+db.students.ensureIndex({student_id:1})
+
+// find all indexes
+db.system.indexes.find()
+
+// get all indexes in students collections
+db.students.getIndexes()
+
+// to drop index in students collection
+db.students.dropIndex({student_id:1})
+
+// adding unique index
+db.students.ensureIndex({student_id:1},{unique:true})
+db.students.ensureIndex({student_id:1, class_id:1},{unique:true})
+
+// droping duplicate
+db.students.ensureIndex({student_id:1},{unique:true},{dropDups:true})
+
+// creating sparse index
+db.students.ensureIndex({student_id:1},{unique:true, sparse:true})
+
+//explain
+db.foo.ensureIndex({a:1, b:1, c:1})
+db.foo.find({c:1}).explain()
+
+// to find the total index size
+db.students.totalIndexSize()
+
+// geospatial for 2D query
+db.places.find({'location':{'$near': [74,140]}}).limit(3)
+
+// profiling the system profile file
+db.system.profile.find({millis:{$gt:1000}}).sort({ts:-1})
+
+// answer for hw4.4
+load the sysprofile file in mongodb by:
+>mongoimport -d m101 -c profile < sysprofile.json
+>db.profile.find({ns:'school2.students'}).sort({millis:-1}).limit(2)
