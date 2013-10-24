@@ -1,0 +1,16 @@
+1. Unpack and restore the Q1 enron.zip as
+>mongorestore dump/enron
+>mongo
+>db.messages.count()
+this must give 120,477 documents
+
+Q1: messages from andrew.fastow@enron.com to jeff.skilling@enron.com
+ 
+> db.messages.find({"headers.From":"andrew.fastow@enron.com","headers.To":"jeff.skilling@enron.com"}).count()
+
+Q2:
+> db.messages.aggregate({$unwind:"$headers.To"},{$group:{_id:{"from": "$headers.From", "to": "$headers.To"}, "emails": {$sum:1}}},{$sort:{"emails":-1}},{$limit: 2})
+
+
+Q3:
+> db.messages.update({"headers.Message-ID": "<8147308.1075851042335.JavaMail.evans@thyme>"},{$push:{"headers.To":"mrpotatohead@10gen.com"}})
